@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: .
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules  # evita conflitti tra host e container
+    container_name: vue-frontend-dev
+    environment:
+      - NODE_ENV=development

@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default.css";
+/*@import '@mdi/font/css/materialdesignicons.css';
+@import 'vuetify/styles';*/
+
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
