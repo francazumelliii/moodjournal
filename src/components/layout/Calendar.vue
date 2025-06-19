@@ -48,22 +48,6 @@
         </div>
       </div>
 
-      <!-- Modal di creazione (opzionale) -->
-      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white p-4 rounded-lg w-80">
-          <h3 class="text-base font-semibold mb-3">Crea evento ({{ selectedDateString }})</h3>
-          <input
-              v-model="newEventTitle"
-              type="text"
-              placeholder="Titolo evento"
-              class="w-full p-2 border rounded text-sm mb-3"
-          />
-          <div class="flex justify-end gap-2">
-            <button @click="closeModal" class="px-3 py-1 bg-gray-300 rounded text-sm">Annulla</button>
-            <button @click="createEvent" class="px-3 py-1 bg-blue-600 text-white rounded text-sm">Crea</button>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 </template>
@@ -94,7 +78,6 @@ watch(eventsList, (newVal) => {
 
 
 const user = JSON.parse(localStorage.getItem('user'));
-const showModal = ref(false)
 const newEventTitle = ref('')
 const selectedDate = ref(null)
 
@@ -236,7 +219,6 @@ function onDayClick(day) {
   if (!day.currentMonth) return
   selectedDate.value = day.date
   newEventTitle.value = ''
-  showModal.value = true
 }
 
 // Click su evento: naviga alla pagina evento
@@ -250,26 +232,7 @@ function onEventClick(event) {
   }
 }
 
-// Creazione nuovo evento via API (opzionale)
-// Devi avere un endpoint POST /api/events con body { title, date }
-// Dopo creazione, ricarica lista
-async function createEvent() {
-  if (!newEventTitle.value.trim()) return
-  const payload = {
-    title: newEventTitle.value.trim(),
-    date: selectedDateString.value
-    // aggiungi altri campi se necessari
-  }
-  try {
-    const res = await apiService.post('/events', payload)
-    // Dopo creazione, ricarica eventi mese
-    await fetchEventsForMonth(currentDate.value)
-  } catch (error) {
-    console.error('Errore creazione evento:', error)
-  } finally {
-    showModal.value = false
-  }
-}
+
 </script>
 
 <style scoped>

@@ -4,6 +4,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import modalService from "@/services/ModalService.js";
 import apiService from "@/services/ApiService.js";
+import router from "@/router/index.js";
 
 const route = useRoute();
 const journalId = route.params.id;
@@ -68,6 +69,17 @@ async function fetchLookups() {
     console.error('Error loading lookups:', error);
     activities.value = [];
     emotions.value = [];
+  }
+}
+
+async function deleteJournal() {
+  try {
+    const response = await apiService.delete(`/journals/${journalId}`);
+    if(response){
+      router.push("/home");
+    }
+  } catch (e) {
+    console.error('Error deleting journal:', e);
   }
 }
 
@@ -215,6 +227,7 @@ async function saveJournal() {
 
     <div class="flex justify-end gap-2">
       <button @click="saveJournal" class="px-4 py-2 hover:bg-cyan-700 bg-cyan-600 text-white rounded-lg">Salva</button>
+      <button @click="deleteJournal" class="px-4 py-2 hover:bg-gray-700 bg-gray-600 text-white rounded-lg">Elimina</button>
     </div>
   </section>
 </template>
