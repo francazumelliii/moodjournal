@@ -105,7 +105,7 @@ function buildJournalRequest() {
         <SimpleCard label="How I feel today?" type="INPUT_ONLY" />
 
         <div class="flex flex-col items-center justify-center w-full">
-          <SimpleCard label="Mood Slider" type="SLIDER" v-model="moodSlider">
+          <SimpleCard label="Mood Slider" type="SLIDER" v-model="moodSlider" :disabled="false">
             <div class="flex flex-row justify-between items-center gap-x-1">
               <label
                   v-for="emotion in emotions"
@@ -171,6 +171,7 @@ function buildJournalRequest() {
       <div class="grid grid-cols-3 gap-3 justify-between">
         <SimpleCard
             v-model="stress"
+            :disabled="false"
             type="SLIDER"
             label="Stress Level"
             image="https://www.freeiconspng.com/uploads/stress-icons--noun-project-0.png"
@@ -179,6 +180,7 @@ function buildJournalRequest() {
         <SimpleCard
             v-model="anxiety"
             type="SLIDER"
+            :disabled="false"
             label="Anxiety Level"
             image="https://cdn-icons-png.flaticon.com/512/6124/6124549.png"
             image-title="Anxiety Level"
@@ -187,6 +189,7 @@ function buildJournalRequest() {
             v-model="energy"
             type="SLIDER"
             label="Energy Level"
+            :disabled="false"
             image="https://png.pngtree.com/element_our/png/20180823/energy-line-icon-png_65280.jpg"
             image-title="Energy Level"
         />

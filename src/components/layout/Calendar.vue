@@ -1,12 +1,12 @@
 <!-- src/components/Calendar.vue -->
 <template>
-  <section class="">
-    <div class="p-4 max-w-3xl mx-auto">
+  <section class="w-full p-4">
+    <div class="p-4 w-full mx-auto">
       <!-- Header mese -->
       <div class="flex justify-between items-center mb-2">
-        <button @click="prevMonth" class="px-3 py-1 bg-gray-700 text-white rounded text-sm">←</button>
-        <h2 class="text-lg font-semibold">{{ currentMonthYear }}</h2>
-        <button @click="nextMonth" class="px-3 py-1 bg-gray-700 text-white rounded text-sm">→</button>
+        <button @click="prevMonth" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded text-sm">←</button>
+        <h2 class="text-lg font-semibold uppercase dark:text-white">{{ currentMonthYear }}</h2>
+        <button @click="nextMonth" class="px-3 py-1 bg-gray-700  hover:bg-gray-600 text-white rounded text-sm">→</button>
       </div>
 
       <!-- Giorni settimana -->
@@ -19,7 +19,7 @@
         <div
             v-for="(day, idx) in calendarDays"
             :key="idx"
-            class="border rounded p-1 h-20 flex flex-col hover:bg-gray-100 cursor-pointer"
+            class="border rounded p-1 h-20 flex flex-col bg-gray-700 hover:bg-gray-600 cursor-pointer"
             @click="onDayClick(day)"
         >
           <!-- Numero giorno -->
@@ -32,7 +32,7 @@
             <div
                 v-for="(event, eidx) in day.events.slice(0, 3)"
                 :key="event.id"
-                class="text-[10px] leading-snug px-1 bg-blue-200 text-blue-800 rounded truncate"
+                class="text-[10px] leading-snug px-1 bg-indigo-400 hover:bg-indigo-500 text-indigo-900 rounded truncate"
                 :title="event.date"
                 @click.stop="onEventClick(event)"
             >
@@ -55,13 +55,11 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import apiService from '@/services/ApiService.js' // Axios o simile
-// Stato mese corrente
+import apiService from '@/services/ApiService.js'
+
 const today = new Date()
 const currentDate = ref(new Date(today.getFullYear(), today.getMonth(), 1))
 
-// Lista eventi ricevuti dall'API per il mese corrente
-// array di oggetti { id, title, date, ... }
 
 const eventsList = ref([]);
 
@@ -71,7 +69,7 @@ function checkLogin() {
     router.push("/")
   }
 }
-// Add a watcher for debugging
+
 watch(eventsList, (newVal) => {
   console.log('eventsList changed:', newVal?.length, 'events');
 }, { immediate: true, deep: true });
@@ -81,13 +79,11 @@ const user = JSON.parse(localStorage.getItem('user'));
 const newEventTitle = ref('')
 const selectedDate = ref(null)
 
-// Giorni settimana
 const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
 
-// Router per navigazione
+
 const router = useRouter()
 
-// Computed: header mese
 const currentMonthYear = computed(() =>
     currentDate.value.toLocaleDateString('it-IT', {
       month: 'long',
@@ -105,7 +101,6 @@ async function fetchEventsForMonth(date) {
     console.log(`Fetching events for ${year}-${month}...`);
     const response = await apiService.get(`/journals?month=${year}-${month}&userId=${user.id}`)
 
-    // Make sure we're setting the value properly
     if (Array.isArray(response)) {
       eventsList.value = response;
       console.log('Events loaded:', response.length, 'events');
@@ -142,7 +137,6 @@ watch(currentDate, async (newDate) => {
   await fetchEventsForMonth(newDate);
 });
 
-// Costruisce calendarDays: array di oggetti { date: Date, currentMonth: boolean, events: [...] }
 const calendarDays = computed(() => {
   console.log('Recalculating calendar days with events:', eventsList.value);
   const start = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), 1)
@@ -152,7 +146,6 @@ const calendarDays = computed(() => {
   const startDay = start.getDay() // 0 domenica .. 6 sabato
   const totalDays = end.getDate()
 
-  // Helper per ottenere eventi per una data specifica
   function getEventsForDate(date) {
   if (!eventsList.value) {
     console.warn('eventsList is null/undefined');
@@ -184,18 +177,15 @@ const calendarDays = computed(() => {
 
 
 
-  // Pre-mese
   for (let i = 0; i < startDay; i++) {
     const date = new Date(start)
     date.setDate(date.getDate() - (startDay - i))
     days.push({ date, currentMonth: false, events: getEventsForDate(date) })
   }
-  // Giorni mese corrente
   for (let i = 1; i <= totalDays; i++) {
     const date = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), i)
     days.push({ date, currentMonth: true, events: getEventsForDate(date) })
   }
-  // Post-mese per completare 6 righe
   const nextDays = 42 - days.length
   for (let i = 1; i <= nextDays; i++) {
     const date = new Date(end)
@@ -205,7 +195,6 @@ const calendarDays = computed(() => {
   return days
 })
 
-// Navigazione mese
 function nextMonth() {
   currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1)
 }
@@ -213,21 +202,16 @@ function prevMonth() {
   currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1)
 }
 
-// Click sul giorno: ad es. apri modal di creazione, o naviga altrove
 function onDayClick(day) {
-  // Se vuoi permettere solo creazione su giorni del mese corrente:
   if (!day.currentMonth) return
   selectedDate.value = day.date
   newEventTitle.value = ''
 }
 
-// Click su evento: naviga alla pagina evento
 function onEventClick(event) {
-  // event.id e/o event.route
   if (event.route) {
     router.push(event.route)
   } else {
-    // Esempio: rotta nominata "EventDetail" con param id
     router.push({ name: 'EventDetail', params: { id: event.id } })
   }
 }
@@ -236,5 +220,4 @@ function onEventClick(event) {
 </script>
 
 <style scoped>
-/* Puoi adattare ulteriormente h-20, p-1, text-xs ecc. come mostrato in versione compatta */
 </style>

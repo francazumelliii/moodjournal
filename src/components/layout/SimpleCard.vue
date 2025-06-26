@@ -10,12 +10,16 @@ const props = defineProps({
   image: { type: String, default: "" },
   imageSize: { type: String, default: "w-10 h-10" },
   activities: { type: Array, default: () => [] },
-  modelValue: [String, Number, Array, Object]
+  modelValue: [String, Number, Array, Object],
+  disabled:{ type: Boolean, default: false },
+  showValue: { type: Boolean, default: true },
+  class: { type: String, default: '' },
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
 const textInput = ref("");
+const dateInput = ref("");
 const sliderValue = ref(50);
 const selectValue = ref("");
 const pureColor = ref("#000000");
@@ -32,6 +36,9 @@ watch(() => props.modelValue, (val) => {
       break;
     case "SLIDER":
       sliderValue.value = typeof val === "number" ? val : 50;
+      break;
+    case "DATE":
+      dateInput.value = val ?? "";
       break;
     case "SELECT":
       selectValue.value = val ?? "";
@@ -52,6 +59,11 @@ watch(textInput, val => {
     emit("update:modelValue", val);
   }
 });
+watch(dateInput, (val) => {
+  if(props.type === "DATE") {
+    emit("update:modelValue", val);
+  }
+}, { immediate: true });
 
 watch(sliderValue, val => {
   if(props.type === "SLIDER") {
@@ -100,29 +112,50 @@ watch([multiValue, descriptions], () => {
     </div>
   </div>
 
-  <!-- SLIDER -->
-  <div v-if="type === 'SLIDER'" class="flex flex-col bg-gray-800 rounded-lg p-4 space-y-4">
-    <label class="text-sm font-medium text-white">{{ label }}</label>
-    <div class="flex items-center space-x-4">
-      <img v-if="image" :src="image" :class="imageSize" alt="img" />
-      <input
-          type="range"
-          min="0"
-          max="100"
-          v-model.number="sliderValue"
-          class="w-full h-2 rounded-lg bg-gray-200 dark:bg-gray-700 cursor-pointer"
-      />
-      <span class="text-white w-10 text-right">{{ sliderValue }}</span>
+  <!-- INPUT -->
+  <div v-if="type === 'DATE'" class="flex items-center bg-gray-800 rounded-lg p-2">
+    <div class="w-full flex flex-row items-center space-x-4">
+
+      <div class="flex-grow">
+        <label v-if="label" class="block mb-2 text-sm font-medium text-white">{{ label }}</label>
+        <input
+            v-model="dateInput"
+            type="date"
+            :placeholder="placeholder"
+            :class="[{'bg-gray-700 border border-gray-600': !props.disabled}, {'bg-gray-800 border border-gray-800': props.disabled}]"
+            class="w-full p-2.5 rounded-lg  text-white text-sm focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
     </div>
-    <slot />
   </div>
 
+
+ <!-- SLIDER -->
+ <div v-if="type === 'SLIDER'" class="flex flex-col bg-gray-800 rounded-lg p-4 space-y-4" :class="props.class">
+   <label class="text-sm font-medium text-white">{{ label }}</label>
+   <div class="flex items-center space-x-4">
+     <img v-if="image" :src="image" :class="imageSize" alt="img" />
+     <input
+       :disabled="props.disabled"
+       type="range"
+       min="0"
+       max="100"
+       v-model.number="sliderValue"
+       class="w-full h-2 rounded-lg bg-gray-200 dark:bg-gray-700 cursor-pointer"
+     />
+     <span v-if="props.showValue" class="text-white w-10 text-right">{{ sliderValue }}</span>
+   </div>
+   <div class="flex justify-center items-start">
+     <slot />
+   </div>
+ </div>
+
   <!-- COLOR PICKER -->
-  <div v-if="type === 'PICKER'" class="flex flex-col bg-gray-800 rounded-lg p-4 space-y-4">
+  <div v-if="type === 'PICKER'" class="flex flex-col  rounded-lg p-4 space-y-4" :class="props.class">
     <label class="text-sm font-medium text-white">{{ label }}</label>
-    <div class="flex items-center justify-between w-full">
+    <div class="flex items-center justify-start gap-x-3 w-full">
       <ColorPicker v-model:pureColor="pureColor" v-model:gradientColor="gradientColor" />
-      <span class="text-white ml-4">{{ pureColor }}</span>
+      <span :class="[{'hidden': !props.showValue}]" :style="{color: pureColor}" class=" ml-4 ">{{ pureColor }}</span>
     </div>
     <slot />
   </div>
@@ -167,5 +200,11 @@ watch([multiValue, descriptions], () => {
 </template>
 
 <style scoped>
+
+:deep(.vc-color-wrap) {
+  width: 8rem !important;
+  height: 2.5rem !important;
+  margin-bottom: .5rem !important;
+}
 /* Puoi aggiungere eventuali stili personalizzati qui */
 </style>

@@ -6,6 +6,8 @@ import DashBoard from "@/components/layout/Dashboard.vue";
 import Login from "@/components/layout/Login.vue";
 import Signup from "@/components/layout/Signup.vue";
 import JournalDetails from "@/components/layout/JournalDetails.vue";
+import List from "@/components/layout/List.vue";
+import Profile from "@/components/layout/Profile.vue";
 const routes = [
     {
         path: '/',
@@ -32,6 +34,17 @@ const routes = [
         name: 'EventDetail',
         component: JournalDetails,
         props: true
+    }
+    ,
+    {
+        path: '/list',
+        name: 'List',
+        component: List,
+    },
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: Profile,
     }
 
 ]

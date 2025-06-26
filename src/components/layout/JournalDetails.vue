@@ -176,34 +176,34 @@ async function saveJournal() {
 <template>
   <section class="bg-gray-900 rounded-lg flex flex-col p-4 " >
     <h2 class="text-xl text-white font-bold mb-4">Modifica Journal</h2>
-    <div class="grid grid-cols-2 gap-3 mb-4">
-      <SimpleCard label="Mood Slider" type="SLIDER" v-model="moodSlider" />
+    <div class="grid grid-cols-2 gap-3 mb-4 w-full">
+      <div class="flex flex-col col-span-2 items-center mb-4 w-[100%] " >
+        <SimpleCard label="Mood Slider" type="SLIDER" v-model="moodSlider" class="w-full">
+          <div class="flex gap-x-3 flex-wrap w-full items-center justify-center">
+            <label v-for="e in emotions" :key="e.id"
+                   class="flex flex-col items-center cursor-pointer">
+              <input type="checkbox" :value="e.id" v-model="selectedEmotions" class="hidden" />
+              <div :class="['p-1 rounded-full', selectedEmotions.includes(e.id) ? 'bg-cyan-500' : 'bg-transparent']">
+                <img :src="e.image" :alt="e.name" class="w-10 h-10 rounded-full" />
+              </div>
+              <span class="text-xs" :class="selectedEmotions.includes(e.id) ? 'text-cyan-500' : 'text-white'">
+              {{ e.name }}
+            </span>
+            </label>
+          </div>
+        </SimpleCard>
+      </div>
       <SimpleCard label="Song of the day" type="INPUT_IMAGE" v-model="song"
                   image="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1200px-Spotify_logo_without_text.svg.png"
                   image-size="w-10 h-10" />
-      <SimpleCard label="Color of the day" type="PICKER" v-model="color" />
+      <SimpleCard label="Color of the day" type="PICKER" v-model="color" class="bg-gray-800"/>
       <SimpleCard label="Quote of the day" type="SELECT" v-model="quote" />
       <SimpleCard label="Obsessive thought" type="INPUT_ONLY" v-model="obsessiveThought" />
       <SimpleCard label="Goods of the day" type="INPUT_ONLY" v-model="goods" />
       <SimpleCard label="Bads of the day" type="INPUT_ONLY" v-model="bads" />
     </div>
 
-    <div class="flex flex-col items-center mb-4">
-      <SimpleCard label="Emotions" type="SLIDER">
-        <div class="flex gap-x-1 flex-wrap">
-          <label v-for="e in emotions" :key="e.id"
-                 class="flex flex-col items-center cursor-pointer">
-            <input type="checkbox" :value="e.id" v-model="selectedEmotions" class="hidden" />
-            <div :class="['p-1 rounded-full', selectedEmotions.includes(e.id) ? 'bg-cyan-500' : 'bg-transparent']">
-              <img :src="e.image" :alt="e.name" class="w-10 h-10 rounded-full" />
-            </div>
-            <span class="text-xs" :class="selectedEmotions.includes(e.id) ? 'text-cyan-500' : 'text-white'">
-              {{ e.name }}
-            </span>
-          </label>
-        </div>
-      </SimpleCard>
-    </div>
+
 
     <div class="mb-4">
       <SimpleCard
